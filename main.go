@@ -38,6 +38,24 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]int64{"result": result})
 }
 
+func Substract(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var subReq model.SubstractRequest
+	err := json.NewDecoder(r.Body).Decode(&subReq)
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	result := subReq.Number1 - subReq.Number2
+	// fmt.Fprintf(w, "Result: %d", result)
+	json.NewEncoder(w).Encode(map[string]int64{"result": result})
+}
+
 func main() {
 	log.Println("Starting our simple http server.")
 
@@ -45,6 +63,7 @@ func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/info", Info)
 	http.HandleFunc("/add", Add)
+	http.HandleFunc("/substract", Substract)
 
 	log.Println("Started on port", portNum)
 	fmt.Println("To close connection CTRL+C :-)")
